@@ -3,7 +3,11 @@
 
 ---
 
-⚠️ - <b>This project has been discontinued</b> out of respect for TryHackMe’s ToS. Although TryDateMe did not scrape data, inject content, modify the website, or perform automated navigation, it relied on a browser extension script to read site data already delivered to the browser. Under TryHackMe’s ToS, any programmatic access to site data is not permitted, even when user-initiated and read-only. To avoid any potential ToS conflicts for users or the platform, development has been stopped.
+> [!WARNING]
+> This project has been discontinued out of respect for TryHackMe’s ToS. Although TryDateMe did not scrape data, inject content, modify the website, or perform automated navigation, it relied on a browser extension script to read site data already delivered to the browser. Under TryHackMe’s ToS, any programmatic access to site data is not permitted, even when user-initiated and read-only. To avoid any potential ToS conflicts for users or the platform, development has been stopped.
+
+> [!IMPORTANT]
+> **February 2026** - Following feedback submitted to TryHackMe, room dates have been reinstated and are now accessible via Options → Room Info. However, users must first join the room to view this information. Additionally, the exact date is still not displayed; instead, it shows a relative time (e.g., “X days ago”) rather than the specific date. The tool is therefore still relevant.
 
 ---
 
