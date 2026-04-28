@@ -1,5 +1,8 @@
 ## How to Install (All Browsers)
 
+> [!NOTE]
+> TryDateMe is now TryToolMe, with more features! However, the installation process remains the same.
+
 <table>
   <thead>
     <tr>
