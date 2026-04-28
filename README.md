@@ -1,26 +1,37 @@
 <img width="3518" height="1024" alt="image" src="https://github.com/user-attachments/assets/095b12b9-73f0-48a7-9114-da8da0232d8c" />
 
 ---
-
-> [!WARNING]
-> This project has been discontinued out of respect for TryHackMe’s ToS. Although TryDateMe did not scrape data, inject content, modify the website, or perform automated navigation, it relied on a browser extension script to read site data already delivered to the browser. Under TryHackMe’s ToS, any programmatic access to site data is not permitted, even when user-initiated and read-only. To avoid any potential ToS conflicts for users or the platform, development has been stopped.
-
-> [!IMPORTANT]
-> **February 2026** - Following feedback submitted to TryHackMe, room dates have been reinstated and are now accessible via Options → Room Info. However, users must first join the room to view this information. Additionally, the exact date is still not displayed; instead, it shows a relative time (e.g., “X days ago”) rather than the specific date. The tool is therefore still relevant.
+<p align="center">
+  <strong>TryToolMe</strong> - a browser extension for <a href="https://tryhackme.com">TryHackMe</a>: room timelines, public-profile insights, and capability score details.<br>
+</p>
 
 ---
 
-<p align="center">A browser extension that restores the creation and publish dates of TryHackMe rooms.<br>How to install <b><a href="https://github.com/Dragkob/TryDateMe/blob/main/INSTALLATION.md">here</a>.</b></p>
+### Features
 
-| **Features** | **Installation (Chrome/Edge/Brave/Chromium)** |
-|:------------:|:--------------------------------------------:|
-| Automatically detects TryHackMe room pages | 1. Download or clone this repository. |
-| Extracts creation & publication dates and displays them in a clean, native‑looking UI | 2. Go to: `chrome://extensions/` |
-| Zero data collection & fully client‑side | 3. Enable **Developer Mode**. |
-| Lightweight and fast | 4. Click **Load unpacked**. |
-| The tool does not alter or interfere with the website or its content in any way | 5. Select the project folder. |
+| Area | What it does |
+|------|----------------|
+| **Room pages** (`/room/…`) | Reads creation & publish dates and shows them in the extension popup in a simple table. |
+| **Public profiles** (`/p/…`) | On someone’s (or your own) profile: joined date, league tier, yearly activity totals, and ranked **top active days** for the selected year. |
+| **Capability score** | Opens from the popup on TryHackMe: full score breakdown, components, trends, and recent history from TryHackMe’s API (with last-fetch time shown). Badge reflects POV/score when you’re on the site. |
+| **Caching & settings** | Separate TTLs: room/profile data (days) vs capability score (hours). Clear each cache independently. |
+| **Privacy** | No separate backend; data stays local except requests you trigger to **tryhackme.com** (and API calls the extension needs for the features above). |
+
+> [!NOTE]
+> The extension <b>does not</b> change TryHackMe’s pages by injecting unrelated UI; it uses the popup (and content scripts only where needed for room/profile data) to show extra information. The website is <b>not</b> being manipulated in any way, shape or form.
 
 ---
+
+### Quick install
+
+1. Download or clone this repository.  
+2. Open `chrome://extensions/` (or `edge://extensions/` in Edge).  
+3. Turn on **Developer mode**.  
+4. Click **Load unpacked** and choose the extension folder (the one that contains `manifest.json`).  
+5. Pin the extension if you like; open it while on **tryhackme.com** to use it.
+
+---
+### Contributions
 
 Contributions are welcome. However, due to the Source‑Available license, contributions must follow strict rules:
 
@@ -33,36 +44,7 @@ Contributions are welcome. However, due to the Source‑Available license, contr
 
 ---
 
-<table>
-  <thead>
-    <tr>
-      <th colspan="3" style="text-align:center;">Gallery</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="center">
-        <!-- Image 1 -->
-        <img src="https://github.com/user-attachments/assets/e5142528-0454-4dab-8144-c7e1c1ae5d4e" alt="Gallery image 1" style="width:100%; max-width:300px;" />
-      </td>
-      <td align="center">
-        <!-- Image 2 -->
-        <img src="https://github.com/user-attachments/assets/972c2f78-97a2-4fe5-bf29-5e8accd8aaa2" alt="Gallery image 2" style="width:100%; max-width:300px;" />
-      </td>
-      <td align="center">
-        <!-- Image 3 -->
-        <img src="https://github.com/user-attachments/assets/a0506374-7b0e-461d-a35b-f2a20446540d" alt="Gallery image 3" style="width:100%; max-width:300px;" />
-      </td>
-    </tr>
-
-  </tbody>
-</table>
-
-
----
-
-
-If you find TryDateMe useful:
+If you find TryToolMe useful:
 - Star the repository ⭐
 - Share the project with others
 - Submit suggestions and improvements
