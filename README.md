@@ -7,6 +7,11 @@
 
 ---
 
+> [!NOTE]
+> I'm currently waiting for THM to approve the release of this tool.
+
+---
+
 ### Features
 
 | Area | What it does | Image |
