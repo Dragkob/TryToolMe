@@ -24,11 +24,14 @@
 
 ### Quick install
 
+
+
 1. Download or clone this repository.  
 2. Open `chrome://extensions/` (or `edge://extensions/` in Edge).  
 3. Turn on **Developer mode**.  
 4. Click **Load unpacked** and choose the extension folder (the one that contains `manifest.json`).  
 5. Pin the extension if you like; open it while on **tryhackme.com** to use it.
+- [INSTALLATION VIDEO GUIDE](https://github.com/Dragkob/TryToolMe/blob/main/INSTALLATION.md)
 
 ---
 ### Contributions
