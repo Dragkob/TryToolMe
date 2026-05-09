@@ -3,12 +3,11 @@
 ---
 <p align="center">
   <strong>TryToolMe</strong> - a browser extension for <a href="https://tryhackme.com">TryHackMe</a>: room timelines, public-profile insights, and capability score details.<br>
+  <sub>
+    <i>Officially approved by the TryHackMe team</i>
+    <img src="https://github.com/user-attachments/assets/ba462791-fe23-4753-ac3a-720d31e3f5f9" width="8">
+  </sub>
 </p>
-
----
-
-> [!NOTE]
-> I'm currently waiting for THM to approve the release of this tool.
 
 ---
 
