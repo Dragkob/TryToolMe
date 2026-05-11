@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TryToolMe Settings</title>
+  <style>
+    body {
+      min-width: 400px;
+      padding: 30px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #cccccc;
+      background-color: #1a1e24;
+      text-align: justify;
+    }
+
+    h1 {
+      color: #e0e0e0;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .setting-group {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .label-with-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .label-with-info label {
+      display: inline;
+      margin-bottom: 0;
+      color: #b0c4de;
+      font-weight: bold;
+    }
+
+    .info-tip-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 1px solid rgba(167, 217, 247, 0.45);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      color: #a7d9f7;
+      cursor: help;
+      flex-shrink: 0;
+    }
+
+    .info-tip-btn:hover {
+      background: rgba(167, 217, 247, 0.15);
+      border-color: #a7d9f7;
+    }
+
+    .info-tip-btn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+      pointer-events: none;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #b0c4de;
+      font-weight: bold;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      color: #f0f0f0;
+      font-size: 1em;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #a7d9f7;
+    }
+
+    .save-button {
+      padding: 10px 20px;
+      background-color: #a7d9f7;
+      color: #1a1e24;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1em;
+      transition: background-color 0.2s ease;
+    }
+
+    .save-button:hover {
+      background-color: #c0e7ff;
+    }
+
+    .clear-cache-button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      width: 100%;
+      box-sizing: border-box;
+      background: transparent;
+      color: #a7d9f7;
+      border: 1px solid rgba(167, 217, 247, 0.45);
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1em;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .clear-cache-button:hover {
+      background: rgba(167, 217, 247, 0.12);
+      border-color: #a7d9f7;
+    }
+
+    .status-message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .status-message.success {
+      background-color: rgba(76, 175, 80, 0.3);
+      color: #81c784;
+      display: block;
+    }
+
+    .status-message.error {
+      background-color: rgba(244, 67, 54, 0.3);
+      color: #e57373;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>TryToolMe Settings</h1>
+  <div class="setting-group">
+    <div class="label-with-info">
+      <label for="cache-duration">Cache duration (days)</label>
+      <button type="button" class="info-tip-btn"
+        title="Room dates and profile activity are cached separately from capability score. Duration 1–7 days; after that, data is fetched again from TryHackMe."
+        aria-label="What cache duration does">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+      </button>
+    </div>
+    <input type="number" id="cache-duration" min="1" max="7" value="1">
+  </div>
+  <div class="setting-group">
+    <div class="label-with-info">
+      <label for="cache-capability-hours">Capability score cache (hours)</label>
+      <button type="button" class="info-tip-btn"
+        title="Capability score (badge number and detail panel) uses its own cache, independent of room/profile data. Duration 1–72 hours."
+        aria-label="What capability score cache duration does">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+      </button>
+    </div>
+    <input type="number" id="cache-capability-hours" min="1" max="72" value="24">
+  </div>
+  <button class="save-button" id="save-button">Save</button>
+  <button type="button" class="clear-cache-button" id="clear-cache-button">Clear room &amp; profile cache</button>
+  <button type="button" class="clear-cache-button" id="clear-capability-cache-button">Clear capability score cache</button>
+  <div id="status-message" class="status-message"></div>
+  <script src="../js/settings.js"></script>
+</body>
+</html>
+

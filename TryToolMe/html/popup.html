@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>TryToolMe</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      width: 400px;
+      max-width: 400px;
+      margin: 0;
+      padding: 0;
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    html::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    html::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 4px;
+    }
+
+    html::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: min-content;
+      overflow-x: hidden;
+      overflow-y: visible;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 14px;
+      color: #cccccc;
+      background-color: #1a1e24;
+      text-align: justify;
+      --pov-logo-color: #4d78ff;
+    }
+
+    .popup-scroll {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      min-height: min-content;
+      padding: 12px 14px 12px 14px;
+      overflow-x: hidden;
+      overflow-y: visible;
+      overscroll-behavior: auto;
+      position: relative;
+      border-radius: 8px;
+      touch-action: auto;
+    }
+
+    .pov-logo-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 11;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+      color: var(--pov-logo-color);
+    }
+
+    .pov-logo-badge svg,
+    .pov-score-text {
+      pointer-events: none;
+    }
+
+    .pov-logo-badge svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .pov-logo-badge svg * {
+      fill: currentColor;
+    }
+
+    .pov-logo-badge svg {
+      transition: filter 0.18s ease, transform 0.18s ease;
+      filter: drop-shadow(0 0 0.6px color-mix(in srgb, var(--pov-logo-color) 92%, white 8%));
+    }
+
+    .pov-logo-badge:hover svg {
+      filter: drop-shadow(0 0 1.1px color-mix(in srgb, var(--pov-logo-color) 84%, white 16%)) drop-shadow(0 0 2.6px color-mix(in srgb, var(--pov-logo-color) 64%, white 36%));
+      transform: scale(1.01);
+    }
+
+    .pov-score-text {
+      font-size: 0.77em;
+      line-height: 1;
+      font-weight: 700;
+      color: #d9eaff;
+      letter-spacing: 0.01em;
+      text-shadow: 0 0 4px rgba(120, 170, 220, 0.18);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    #capability-detail-root {
+      text-align: justify;
+      margin-top: 4px;
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+
+    .capability-panel-error {
+      margin: 0;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(244, 67, 54, 0.15);
+      color: #e57373;
+      font-size: 0.88em;
+    }
+
+    .capability-loading-msg {
+      margin: 0;
+      padding: 12px;
+      color: #95aabf;
+      font-size: 0.88em;
+      text-align: center;
+    }
+
+    .capability-intro {
+      margin: 8px 0 4px 0;
+      font-size: 0.9em;
+      color: #95aabf;
+      text-align: center;
+    }
+
+    .capability-retrieved-at {
+      margin: 0 0 12px 0;
+      padding: 0 8px;
+      font-size: 0.72em;
+      font-weight: 500;
+      color: rgba(125, 149, 168, 0.95);
+      text-align: center;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+    }
+
+    #capability-content h1 {
+      text-align: center;
+    }
+
+    .capability-hero {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: linear-gradient(165deg, rgba(30, 40, 52, 0.85) 0%, rgba(18, 22, 28, 0.92) 100%);
+      border: 1px solid rgba(100, 160, 200, 0.28);
+      margin-bottom: 12px;
+    }
+
+    .capability-hero__score {
+      font-size: 1.65em;
+      font-weight: 700;
+      color: #f0f7ff;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+
+    .capability-hero__label {
+      font-size: 0.68em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #8fa4b8;
+      margin-bottom: 4px;
+    }
+
+    .capability-pov-pill {
+      flex-shrink: 0;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.72em;
+      font-weight: 700;
+      text-transform: capitalize;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .capability-section-title {
+      margin: 0 0 8px 0;
+      font-size: 0.78em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #9db4c9;
+    }
+
+    .capability-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .capability-meta-card {
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .capability-meta-card dt {
+      margin: 0;
+      font-size: 0.65em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #7d92a5;
+    }
+
+    .capability-meta-card dd {
+      margin: 4px 0 0 0;
+      font-size: 0.88em;
+      color: #dceaf7;
+      font-weight: 600;
+    }
+
+    .capability-components {
+      margin-bottom: 14px;
+    }
+
+    .capability-comp-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px 12px;
+      align-items: baseline;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.15);
+      margin-bottom: 6px;
+    }
+
+    .capability-comp-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .capability-comp-name {
+      font-weight: 600;
+      color: #c9dce8;
+      font-size: 0.85em;
+    }
+
+    .capability-comp-sub {
+      grid-column: 1 / -1;
+      font-size: 0.72em;
+      color: #8fa4b0;
+      margin-top: 2px;
+    }
+
+    .capability-comp-val {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #a7d9f7;
+      font-size: 0.9em;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .capability-history {
+      margin-top: 4px;
+    }
+
+    .capability-history-item {
+      margin-bottom: 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+    }
+
+    .capability-history-item summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 8px 10px;
+      font-size: 0.78em;
+      color: #dceaf7;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .capability-history-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .capability-history-item summary::after {
+      content: "▾";
+      font-size: 0.75em;
+      color: #7d95a8;
+      margin-left: auto;
+    }
+
+    .capability-history-item[open] summary::after {
+      content: "▴";
+    }
+
+    .capability-history-detail {
+      padding: 0 10px 10px 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .capability-mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 10px;
+      font-size: 0.72em;
+      margin-top: 8px;
+    }
+
+    .capability-mini-grid span:nth-child(odd) {
+      color: #8fa4b0;
+    }
+
+    .capability-mini-grid span:nth-child(even) {
+      color: #d0e6f7;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .popup-scroll::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 80%, rgba(50, 60, 80, 0.2) 0%, rgba(20, 25, 30, 0) 70%),
+        radial-gradient(circle at 80% 20%, rgba(60, 80, 50, 0.2) 0%, rgba(20, 25, 30, 0) 70%),
+        repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(70, 80, 90, 0.1) 1px, rgba(70, 80, 90, 0.1) 2px),
+        repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(70, 80, 90, 0.1) 1px, rgba(70, 80, 90, 0.1) 2px);
+      z-index: 0;
+      opacity: 0.6;
+      border-radius: inherit;
+    }
+
+    .content-container {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      text-align: justify;
+      z-index: 1;
+      padding: 12px 12px 12px 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      position: relative;
+    }
+
+    #thm-content.content-container,
+    #splash-content.content-container,
+    #message-content.content-container,
+    #settings-content.content-container,
+    #capability-content.content-container {
+      min-width: 0;
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+
+    .tab-panel {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    #activity-result {
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    #thm-content,
+    #splash-content,
+    #message-content,
+    #settings-content,
+    #capability-content {
+      display: none;
+    }
+
+    #message-content p {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
+    .splash-card {
+      text-align: justify;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: linear-gradient(165deg, rgba(30, 40, 52, 0.95) 0%, rgba(18, 22, 28, 0.98) 100%);
+      border: 1px solid rgba(100, 160, 200, 0.25);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .splash-card h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.08em;
+      color: #d8edff;
+      text-align: justify;
+    }
+
+    .splash-card p {
+      margin: 0 0 10px 0;
+      color: #b9ccdc;
+      font-size: 0.92em;
+      text-align: justify;
+    }
+
+    .splash-features {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .splash-features li {
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #d7e6f3;
+      font-size: 0.9em;
+      line-height: 1.35;
+    }
+
+    .feature-tabs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 0 0 10px 0;
+      max-width: 100%;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1;
+      max-width: 150px;
+      padding: 9px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #c9d4e0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85em;
+      font-weight: 600;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .tab-btn--active {
+      background: rgba(167, 217, 247, 0.2);
+      border-color: rgba(167, 217, 247, 0.5);
+      color: #e8f4fc;
+    }
+
+    .error-message,
+    #activity-error-display {
+      display: none;
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 5px;
+      background: rgba(244, 67, 54, 0.2);
+      color: #e57373;
+      font-size: 0.9em;
+    }
+
+    #activity-error-display {
+      text-align: justify;
+    }
+
+    .room-details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .room-details-table th,
+    .room-details-table td {
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 0.86em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f0f0f0;
+    }
+
+    .room-details-table th {
+      background-color: rgba(255, 255, 255, 0.16);
+      text-align: center;
+      font-weight: 700;
+      color: #d7e5f3;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.74em;
+    }
+
+    .room-details-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .room-details-table .label-cell {
+      width: 35%;
+      font-weight: 700;
+      color: #b6c9dd;
+    }
+
+    .room-details-table .value-cell {
+      width: 65%;
+      color: #eef5fd;
+      font-weight: 400;
+      word-break: break-word;
+    }
+
+    .activity-card {
+      margin-top: 0;
+      max-width: 100%;
+      min-width: 0;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(165deg, rgba(30, 40, 52, 0.95) 0%, rgba(18, 22, 28, 0.98) 100%);
+      border: 1px solid rgba(100, 160, 200, 0.25);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(167, 217, 247, 0.06) inset;
+    }
+
+    .activity-card__intro {
+      text-align: center;
+      padding: 10px 12px 12px 12px;
+      background: linear-gradient(180deg, rgba(45, 60, 78, 0.5) 0%, rgba(28, 36, 48, 0.35) 100%);
+      border-bottom: 1px solid rgba(120, 160, 200, 0.18);
+    }
+
+    .activity-card__intro-cols {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 0;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .activity-card__col--identity {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding-right: 12px;
+    }
+
+    .activity-card__col--meta {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding-left: 14px;
+      margin-left: 8px;
+      border-left: 1px solid rgba(120, 160, 200, 0.42);
+      box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    .activity-card__league-line {
+      margin: 0;
+      padding: 0;
+      font-size: 0.9em;
+      line-height: 1.4;
+      font-weight: 400;
+      color: #d8edff;
+      width: 100%;
+      text-align: center;
+    }
+
+    .activity-card__col--meta .activity-card__league-line {
+      width: 100%;
+      text-align: center;
+    }
+
+    .activity-card__league-label {
+      color: #8fa3b4;
+      font-weight: 400;
+      margin-right: 0;
+    }
+
+    #activity-league-value {
+      color: #e8f4ff;
+      font-weight: 400;
+      word-break: break-word;
+    }
+
+    .activity-card__avatar-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .activity-card__avatar-ph {
+      display: none;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75em;
+      font-weight: 600;
+      color: #7a95aa;
+      border: 2px dashed rgba(130, 180, 220, 0.35);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .activity-card__avatar {
+      display: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 2px solid rgba(130, 180, 220, 0.4);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .value--loading {
+      opacity: 0.7;
+      font-style: italic;
+      font-size: 0.95em !important;
+    }
+
+    .activity-card__name {
+      margin: 0;
+      font-size: 1.15em;
+      font-weight: 600;
+      line-height: 1.25;
+      color: #d8edff;
+      word-break: break-word;
+      text-align: center;
+      max-width: 100%;
+    }
+
+    .activity-card__joined-line {
+      margin: 0;
+      padding: 0;
+      font-size: 0.9em;
+      line-height: 1.4;
+      font-weight: 500;
+      text-align: center;
+      color: #8fa3b4;
+      letter-spacing: 0.01em;
+      width: 100%;
+    }
+
+    .activity-card__joined-line[hidden] {
+      display: none !important;
+    }
+
+    .activity-card__joined-muted {
+      color: #7d92a3;
+      font-weight: 500;
+    }
+
+    .activity-card__joined-dot {
+      color: #5c7080;
+      font-weight: 400;
+      padding: 0 1px;
+    }
+
+    #activity-joined-date {
+      color: #c5d8e8;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .activity-stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .activity-stats-table tbody tr {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .activity-stat-cell {
+      min-width: 0;
+      vertical-align: top;
+      padding: 12px 12px 14px 12px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .activity-stat-cell--half {
+      width: 50%;
+    }
+
+    .activity-stat-cell:last-child {
+      border-right: none;
+    }
+
+    .activity-stat-cell__label {
+      display: block;
+      font-size: 0.68em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8ba4b8;
+      margin: 0 0 3px 0;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    .activity-stat-cell__value {
+      display: block;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #e8f4ff;
+      line-height: 1.2;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .activity-card__topdays {
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: hidden;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.1);
+      padding: 8px 10px 10px 10px;
+      text-align: center;
+    }
+
+    .activity-topdays__year-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 0 6px 0;
+      gap: 4px;
+    }
+
+    .activity-year-nav {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .activity-year-nav__btn {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      margin: 0;
+      border: 1px solid rgba(167, 217, 247, 0.35);
+      border-radius: 6px;
+      background: rgba(30, 38, 48, 0.9);
+      color: #a7d9f7;
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .activity-year-nav__btn:hover:not(:disabled) {
+      background: rgba(167, 217, 247, 0.12);
+      border-color: rgba(167, 217, 247, 0.55);
+    }
+
+    .activity-year-nav__btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .activity-topdays__year {
+      display: block;
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      padding: 0 4px;
+      font-size: 1.35rem;
+      font-weight: 300;
+      letter-spacing: 0.03em;
+      line-height: 1.15;
+      color: #f2f7fb;
+      font-variant-numeric: tabular-nums;
+      background: none;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      text-shadow: 0 1px 18px rgba(120, 175, 220, 0.18);
+      text-align: center;
+    }
+
+    .activity-topdays__year-wrap::after {
+      content: '';
+      width: min(120px, 40%);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(150, 195, 235, 0.45), transparent);
+    }
+
+    .activity-topdays__year.value--loading {
+      opacity: 0.55;
+      font-style: italic;
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+    }
+
+    .activity-topdays__hint {
+      margin: 2px auto 10px;
+      padding: 0 10px;
+      max-width: 280px;
+      font-size: 0.68em;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(125, 149, 168, 0.92);
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .activity-topdays__list {
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    .activity-top-table {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 0.82em;
+    }
+
+    .activity-top-table th:nth-child(1),
+    .activity-top-table td:nth-child(1),
+    .activity-top-table th:nth-child(2),
+    .activity-top-table td:nth-child(2),
+    .activity-top-table th:nth-child(3),
+    .activity-top-table td:nth-child(3) {
+      width: 33.33%;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .activity-top-table th,
+    .activity-top-table td {
+      padding: 6px 8px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      vertical-align: middle;
+    }
+
+    .activity-top-table th {
+      color: #7d95a8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.74em;
+      letter-spacing: 0.04em;
+    }
+
+    .activity-top-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .activity-top-table .rank {
+      color: #5a8a9b;
+      width: 1.5em;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .activity-top-table td:nth-child(2) {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.6em;
+      color: #e0e0e0;
+      text-align: justify;
+      margin-bottom: 20px;
+      margin-top: 5px;
+      text-shadow: none;
+      letter-spacing: normal;
+    }
+
+    .popup-logo {
+      display: block;
+      margin: 0 auto 10px auto;
+      max-width: 128px;
+      height: auto;
+    }
+
+    .settings-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      z-index: 10;
+      transition: opacity 0.2s ease;
+    }
+
+    .settings-icon:hover {
+      opacity: 0.7;
+    }
+
+    .settings-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: #a7d9f7;
+      pointer-events: none;
+    }
+
+    .settings-icon:hover svg {
+      fill: #c0e7ff;
+    }
+
+    p {
+      margin-bottom: 8px;
+      font-size: 0.95em;
+      line-height: 1.4;
+      color: #c9c9c9;
+    }
+
+    a {
+      color: #a7d9f7;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      color: #c0e7ff;
+      text-decoration: underline;
+    }
+
+    .thm-availability-widget-stack {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto 12px;
+    }
+
+    .thm-availability-widget {
+      box-sizing: border-box;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0;
+      padding: 10px 18px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .thm-availability-widget__head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-bottom: 0;
+    }
+
+    .thm-availability-widget__title {
+      margin: 0;
+      font-size: 0.68em;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8fa4b8;
+    }
+
+    .thm-availability-widget__summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 0.9em;
+      font-weight: 600;
+      color: #e8eef5;
+    }
+
+    .thm-availability-info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 1px;
+      border: none;
+      background: transparent;
+      color: #6d9ab8;
+      cursor: help;
+      border-radius: 50%;
+      line-height: 0;
+      flex-shrink: 0;
+      transition: color 0.16s ease, background 0.16s ease;
+    }
+
+    .thm-availability-info-btn:hover {
+      color: #a7d9f7;
+      background: rgba(167, 217, 247, 0.12);
+    }
+
+    .thm-availability-info-icon {
+      width: 12px;
+      height: 12px;
+      display: block;
+    }
+
+    .thm-availability-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: #7d92a5;
+      box-shadow: 0 0 0 0 rgba(125, 146, 165, 0.35);
+    }
+
+    .thm-availability-dot--up {
+      background: #31c372;
+      animation: thm-availability-pulse 2.2s ease-in-out infinite;
+    }
+
+    .thm-availability-dot--down {
+      background: #ff5d73;
+      animation: none;
+    }
+
+    .thm-availability-dot--unknown {
+      background: #b0a060;
+      animation: none;
+    }
+
+    @keyframes thm-availability-pulse {
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(49, 195, 114, 0.55);
+        opacity: 1;
+      }
+      50% {
+        box-shadow: 0 0 0 5px rgba(49, 195, 114, 0);
+        opacity: 0.88;
+      }
+    }
+
+    .github-link-container {
+      position: relative;
+      text-align: center;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      overflow-y: visible;
+      margin-top: 8px;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .github-link-container a {
+      font-size: 0.9em;
+      color: #a7d9f7;
+    }
+
+    .github-link-container a:hover {
+      color: #c0e7ff;
+    }
+
+    .setting-group {
+      margin-bottom: 25px;
+    }
+
+    #settings-content .setting-group {
+      text-align: center;
+    }
+
+    #settings-content h1 {
+      text-align: center;
+    }
+
+    #settings-content .label-with-info label {
+      text-align: center;
+    }
+
+    #settings-content input[type="number"] {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .label-with-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .label-with-info label {
+      display: inline;
+      margin-bottom: 0;
+      color: #b0c4de;
+      font-weight: bold;
+    }
+
+    .info-tip-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 1px solid rgba(167, 217, 247, 0.45);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      color: #a7d9f7;
+      cursor: help;
+      flex-shrink: 0;
+    }
+
+    .info-tip-btn:hover {
+      background: rgba(167, 217, 247, 0.15);
+      border-color: #a7d9f7;
+    }
+
+    .info-tip-btn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+      pointer-events: none;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #b0c4de;
+      font-weight: bold;
+    }
+
+    input[type="number"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      color: #f0f0f0;
+      font-size: 1em;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #a7d9f7;
+    }
+
+    .save-button {
+      padding: 10px 20px;
+      background-color: #a7d9f7;
+      color: #1a1e24;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1em;
+      transition: background-color 0.2s ease;
+      width: 100%;
+    }
+
+    .save-button:hover {
+      background-color: #c0e7ff;
+    }
+
+    .clear-cache-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      width: 100%;
+      box-sizing: border-box;
+      background: transparent;
+      color: #a7d9f7;
+      border: 1px solid rgba(167, 217, 247, 0.45);
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1em;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .clear-cache-button:hover {
+      background: rgba(167, 217, 247, 0.12);
+      border-color: #a7d9f7;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      z-index: 10;
+      transition: opacity 0.2s ease;
+    }
+
+    .back-button:hover {
+      opacity: 0.7;
+    }
+
+    .back-button svg {
+      width: 100%;
+      height: 100%;
+      fill: #a7d9f7;
+      pointer-events: none;
+    }
+
+    .back-button:hover svg {
+      fill: #c0e7ff;
+    }
+
+    .status-message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .status-message.success {
+      background-color: rgba(76, 175, 80, 0.3);
+      color: #81c784;
+      display: block;
+    }
+
+    .status-message.error {
+      background-color: rgba(244, 67, 54, 0.3);
+      color: #e57373;
+      display: block;
+    }
+
+    .muted-status {
+      font-size: 0.85em;
+      color: #8fa4b0;
+      margin: 4px 0 0 0;
+      min-height: 1.1em;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="popup-scroll">
+  <div id="thm-content" class="content-container">
+    <span class="pov-logo-badge" role="button" tabindex="0" aria-label="Capability score details" title="Capability score">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M14.577 5.472a1.765 1.765 0 0 1 2.41 0l3.13 3.13c.508.55.508 1.395 0 1.945l-3.383 3.341c-.507.55-1.396.55-1.903 0l-3.384-3.383c-.507-.508-.507-1.354 0-1.903zm-4.06 6.006 3.341 3.383c.55.508.55 1.396 0 1.903l-3.341 3.384a1.433 1.433 0 0 1-1.946 0l-3.13-3.13a1.765 1.765 0 0 1 0-2.41l3.13-3.13a1.433 1.433 0 0 1 1.946 0m.93 9.6 3.384-3.34a1.304 1.304 0 0 1 1.903 0l3.384 3.34c.507.55.507 1.396 0 1.946l-3.13 3.13a1.765 1.765 0 0 1-2.41 0l-3.13-3.13a1.433 1.433 0 0 1 0-1.946m9.643-.93-3.383-3.384a1.304 1.304 0 0 1 0-1.903l3.383-3.383c.508-.508 1.354-.508 1.904 0l3.13 3.13a1.685 1.685 0 0 1 0 2.41l-3.13 3.13c-.55.507-1.396.507-1.904 0"/>
+      </svg>
+      <span class="pov-score-text">--</span>
+    </span>
+    <span id="settings-icon-thm" class="settings-icon" title="Settings" role="button" tabindex="0">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+      </svg>
+    </span>
+    <img src="../images/TryToolMe.png" alt="TryToolMe Logo" class="popup-logo">
+    <div id="thm-availability-widget" class="thm-availability-widget-stack" aria-live="polite">
+      <div class="thm-availability-widget">
+        <div class="thm-availability-widget__head">
+          <button type="button" class="thm-availability-info-btn" title="Loading…" aria-label="Downtime today">
+            <svg class="thm-availability-info-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.15"/>
+              <circle cx="12" cy="8" r="1.05" fill="currentColor"/>
+              <rect x="10.85" y="10.85" width="2.3" height="6.1" rx="1.15" fill="currentColor"/>
+            </svg>
+          </button>
+          <span class="thm-availability-widget__title">Server status</span>
+          <span class="thm-availability-widget__summary">
+            <span class="thm-availability-dot" aria-hidden="true"></span>
+            <span class="thm-availability-summary">Loading…</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div id="feature-tabs" class="feature-tabs" role="tablist">
+      <button type="button" id="tab-btn-room" class="tab-btn tab-btn--active" role="tab" aria-selected="true">Room dates</button>
+      <button type="button" id="tab-btn-activity" class="tab-btn" role="tab" aria-selected="false">Yearly activity</button>
+    </div>
+    <div id="tab-panel-room" class="tab-panel" role="tabpanel">
+      <div id="error-message-display" class="error-message"></div>
+      <table class="room-details-table">
+        <thead>
+          <tr>
+            <th colspan="2" style="text-align: center;">Room details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label-cell">Name</td>
+            <td class="value-cell" id="roomName">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">ID</td>
+            <td class="value-cell" id="roomID">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Code</td>
+            <td class="value-cell" id="roomCode">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Created</td>
+            <td class="value-cell" id="creationDate">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Published</td>
+            <td class="value-cell" id="publishDate">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="tab-panel-activity" class="tab-panel" role="tabpanel" style="display: none;">
+      <p id="activity-status" class="muted-status" aria-live="polite"></p>
+      <div id="activity-error-display"></div>
+      <div id="activity-result" class="activity-result" style="display: none;">
+        <div class="activity-card" aria-label="Yearly activity">
+          <div class="activity-card__intro">
+            <div class="activity-card__intro-cols">
+              <div class="activity-card__col activity-card__col--identity">
+                <div class="activity-card__avatar-row">
+                  <div class="activity-card__avatar-ph" id="activity-avatar-placeholder" aria-hidden="true">…</div>
+                  <img class="activity-card__avatar" id="activity-avatar" alt="" width="48" height="48" decoding="async" />
+                </div>
+                <p class="activity-card__name" id="activity-username">-</p>
+              </div>
+              <div class="activity-card__col activity-card__col--meta">
+                <p class="activity-card__joined-line" id="activity-joined-wrap" hidden>
+                  <span class="activity-card__joined-muted">Joined</span><span class="activity-card__joined-dot"> · </span><span id="activity-joined-date"></span>
+                </p>
+                <p class="activity-card__league-line">
+                  <span class="activity-card__league-label">League:</span> <span id="activity-league-value">—</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <table class="activity-stats-table">
+            <tbody>
+              <tr class="activity-stats-row">
+                <td class="activity-stat-cell activity-stat-cell--half">
+                  <span class="activity-stat-cell__label" id="activity-total-label">Total activity</span>
+                  <span class="activity-stat-cell__value" id="activity-total">-</span>
+                </td>
+                <td class="activity-stat-cell activity-stat-cell--half">
+                  <span class="activity-stat-cell__label">Active days</span>
+                  <span class="activity-stat-cell__value" id="activity-active-days">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="activity-card__topdays">
+            <div class="activity-topdays__year-wrap">
+              <div class="activity-year-nav" role="group" aria-label="Activity year">
+                <button type="button" id="activity-year-prev" class="activity-year-nav__btn" aria-label="Previous year">‹</button>
+                <span class="activity-topdays__year value--loading" id="activity-topdays-year" aria-live="polite" aria-label="Activity year"></span>
+                <button type="button" id="activity-year-next" class="activity-year-nav__btn" aria-label="Next year">›</button>
+              </div>
+            </div>
+            <p id="activity-topdays-hint" class="activity-topdays__hint">Top 5 days by event count</p>
+            <div id="activity-topdays-list" class="activity-topdays__list" aria-describedby="activity-topdays-hint"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="splash-content" class="content-container">
+    <span class="pov-logo-badge" role="button" tabindex="0" aria-label="Capability score details" title="Capability score">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M14.577 5.472a1.765 1.765 0 0 1 2.41 0l3.13 3.13c.508.55.508 1.395 0 1.945l-3.383 3.341c-.507.55-1.396.55-1.903 0l-3.384-3.383c-.507-.508-.507-1.354 0-1.903zm-4.06 6.006 3.341 3.383c.55.508.55 1.396 0 1.903l-3.341 3.384a1.433 1.433 0 0 1-1.946 0l-3.13-3.13a1.765 1.765 0 0 1 0-2.41l3.13-3.13a1.433 1.433 0 0 1 1.946 0m.93 9.6 3.384-3.34a1.304 1.304 0 0 1 1.903 0l3.384 3.34c.507.55.507 1.396 0 1.946l-3.13 3.13a1.765 1.765 0 0 1-2.41 0l-3.13-3.13a1.433 1.433 0 0 1 0-1.946m9.643-.93-3.383-3.384a1.304 1.304 0 0 1 0-1.903l3.383-3.383c.508-.508 1.354-.508 1.904 0l3.13 3.13a1.685 1.685 0 0 1 0 2.41l-3.13 3.13c-.55.507-1.396.507-1.904 0"/>
+      </svg>
+      <span class="pov-score-text">--</span>
+    </span>
+    <span id="settings-icon-splash" class="settings-icon" title="Settings" role="button" tabindex="0">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+      </svg>
+    </span>
+    <img src="../images/TryToolMe.png" alt="TryToolMe Logo" class="popup-logo">
+    <div class="thm-availability-widget-stack">
+      <div class="thm-availability-widget">
+        <div class="thm-availability-widget__head">
+          <button type="button" class="thm-availability-info-btn" title="Loading…" aria-label="Downtime today">
+            <svg class="thm-availability-info-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.15"/>
+              <circle cx="12" cy="8" r="1.05" fill="currentColor"/>
+              <rect x="10.85" y="10.85" width="2.3" height="6.1" rx="1.15" fill="currentColor"/>
+            </svg>
+          </button>
+          <span class="thm-availability-widget__title">Server status</span>
+          <span class="thm-availability-widget__summary">
+            <span class="thm-availability-dot" aria-hidden="true"></span>
+            <span class="thm-availability-summary">Loading…</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="splash-card">
+      <h2>TryToolMe Features</h2>
+      <ul class="splash-features">
+        <li><strong>Room dates:</strong> Restore created and published dates on room pages.</li>
+        <li><strong>Advanced user info:</strong> Open someone's public TryHackMe profile page to see joined date, league tier, and activity (or your own too).</li>
+        <li><strong>Detailed capability score:</strong> Get the raw numbers used in capability score calculation.</li>
+        <li><strong>Smart cache:</strong> Speed up reloads with configurable cache duration and one-click cache clear.</li>
+      </ul>
+    </div>
+  </div>
+  <div id="message-content" class="content-container">
+    <span class="pov-logo-badge" role="button" tabindex="0" aria-label="Capability score details" title="Capability score">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M14.577 5.472a1.765 1.765 0 0 1 2.41 0l3.13 3.13c.508.55.508 1.395 0 1.945l-3.383 3.341c-.507.55-1.396.55-1.903 0l-3.384-3.383c-.507-.508-.507-1.354 0-1.903zm-4.06 6.006 3.341 3.383c.55.508.55 1.396 0 1.903l-3.341 3.384a1.433 1.433 0 0 1-1.946 0l-3.13-3.13a1.765 1.765 0 0 1 0-2.41l3.13-3.13a1.433 1.433 0 0 1 1.946 0m.93 9.6 3.384-3.34a1.304 1.304 0 0 1 1.903 0l3.384 3.34c.507.55.507 1.396 0 1.946l-3.13 3.13a1.765 1.765 0 0 1-2.41 0l-3.13-3.13a1.433 1.433 0 0 1 0-1.946m9.643-.93-3.383-3.384a1.304 1.304 0 0 1 0-1.903l3.383-3.383c.508-.508 1.354-.508 1.904 0l3.13 3.13a1.685 1.685 0 0 1 0 2.41l-3.13 3.13c-.55.507-1.396.507-1.904 0"/>
+      </svg>
+      <span class="pov-score-text">--</span>
+    </span>
+    <span id="settings-icon-msg" class="settings-icon" title="Settings" role="button" tabindex="0">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+      </svg>
+    </span>
+    <img src="../images/TryToolMe.png" alt="TryToolMe Logo" class="popup-logo">
+    <div class="thm-availability-widget-stack">
+      <div class="thm-availability-widget">
+        <div class="thm-availability-widget__head">
+          <button type="button" class="thm-availability-info-btn" title="Loading…" aria-label="Downtime today">
+            <svg class="thm-availability-info-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.15"/>
+              <circle cx="12" cy="8" r="1.05" fill="currentColor"/>
+              <rect x="10.85" y="10.85" width="2.3" height="6.1" rx="1.15" fill="currentColor"/>
+            </svg>
+          </button>
+          <span class="thm-availability-widget__title">Server status</span>
+          <span class="thm-availability-widget__summary">
+            <span class="thm-availability-dot" aria-hidden="true"></span>
+            <span class="thm-availability-summary">Loading…</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <p>This extension only works on the <a href="https://tryhackme.com" target="_blank" rel="noopener noreferrer">TryHackMe</a> website.</p>
+  </div>
+  <div id="capability-content" class="content-container">
+    <span id="capability-back-icon" class="back-button" title="Back" role="button" tabindex="0">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </span>
+    <img src="../images/TryToolMe.png" alt="TryToolMe Logo" class="popup-logo">
+    <h1 style="margin-top: 0;">Capability score</h1>
+    <p class="capability-intro">Your TryHackMe capability breakdown and score history.</p>
+    <p id="capability-retrieved-at" class="capability-retrieved-at" hidden aria-live="polite"></p>
+    <div id="capability-detail-root"></div>
+  </div>
+  <div id="settings-content" class="content-container">
+    <span id="back-icon" class="back-button" title="Back" role="button" tabindex="0">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </span>
+    <img src="../images/TryToolMe.png" alt="TryToolMe Logo" class="popup-logo">
+    <h1 style="margin-top: 0;">Settings</h1>
+    <div class="setting-group">
+      <div class="label-with-info">
+        <label for="cache-duration">Cache duration (days)</label>
+        <button type="button" class="info-tip-btn"
+          title="Room dates and profile activity are cached separately from capability score. Duration 1–7 days; after that, data is fetched again from TryHackMe."
+          aria-label="What cache duration does">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </button>
+      </div>
+      <input type="number" id="cache-duration" min="1" max="7" value="1" maxlength="1" placeholder="1 to 7 days">
+    </div>
+    <div class="setting-group">
+      <div class="label-with-info">
+        <label for="cache-capability-hours">Capability score cache (hours)</label>
+        <button type="button" class="info-tip-btn"
+          title="Capability score (badge number and detail panel) uses its own cache, independent of room/profile data. Duration 1–72 hours."
+          aria-label="What capability score cache duration does">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </button>
+      </div>
+      <input type="number" id="cache-capability-hours" min="1" max="72" value="24" placeholder="1 to 72 hours">
+    </div>
+    <button class="save-button" id="save-button">Save</button>
+    <button type="button" class="clear-cache-button" id="clear-cache-button">Clear room &amp; profile cache</button>
+    <button type="button" class="clear-cache-button" id="clear-capability-cache-button">Clear capability score cache</button>
+    <div id="status-message" class="status-message"></div>
+  </div>
+  <div class="github-link-container">
+    <a href="https://github.com/Dragkob/TryToolMe/" target="_blank">GitHub</a> | <a href="https://github.com/Dragkob/TryToolMe/" target="_blank">How to use?</a>
+  </div>
+  </div>
+  <script src="../js/popup.js"></script>
+</body>
+
+</html>
